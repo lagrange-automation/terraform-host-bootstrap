@@ -43,12 +43,19 @@ locals {
     "roles/billing.user",
     "roles/compute.xpnAdmin",
     "roles/compute.networkAdmin",
+
+    // Grant the bootstrap account access to manage service accounts and keys.
     "roles/iam.serviceAccountAdmin",
-    "roles/iam.serviceAccountKeyAdmin"
+    "roles/iam.serviceAccountKeyAdmin",
   ]
 
   bootstrap_project_roles = [
-    "roles/storage.admin"
+    "roles/storage.admin",
+
+    // Grant the bootstrap account access to manage APIs on the bootstrap project. The bootstrap
+    // project must have a given API activated on it so that service accounts can manage that
+    // service on a normal project.
+    "roles/serviceusage.serviceUsageAdmin"
   ]
 
   sa_credentials_dir    = "~/.config/gcloud/service-accounts"
