@@ -17,6 +17,9 @@ locals {
     "storage-api.googleapis.com"
   ]
 
+  nested_services = ["${local.default_services}", "${var.activate_apis}"]
+  services = ["${flatten(local.nested_services)}"]
+
   bootstrap_roles = [
     // Permission to view organization IAM policy. This is needed when the bootstrap
     // account is being used to manage the bootstrap module, because it needs to
@@ -76,7 +79,7 @@ resource "google_project" "main" {
 
 resource "google_project_services" "main" {
   project  = "${google_project.main.project_id}"
-  services = "${local.default_services}"
+  services = "${local.services}"
 }
 
 resource "random_id" "tf_state_suffix" {
