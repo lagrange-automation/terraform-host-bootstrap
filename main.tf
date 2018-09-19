@@ -17,7 +17,7 @@ locals {
   ]
 
   nested_services = ["${local.default_services}", "${var.activate_apis}"]
-  services = ["${flatten(local.nested_services)}"]
+  services = ["${distinct(flatten(local.nested_services))}"]
 
   bootstrap_roles = [
     // Permission to view organization IAM policy. This is needed when the bootstrap
