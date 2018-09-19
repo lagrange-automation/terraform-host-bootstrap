@@ -12,10 +12,12 @@ locals {
     "compute.googleapis.com",
     "iam.googleapis.com",
     "oslogin.googleapis.com",
-    "servicemanagement.googleapis.com",
     "serviceusage.googleapis.com",
     "storage-api.googleapis.com"
   ]
+
+  nested_services = ["${local.default_services}", "${var.activate_apis}"]
+  services = ["${distinct(flatten(local.nested_services))}"]
 
   bootstrap_roles = [
     // Permission to view organization IAM policy. This is needed when the bootstrap
@@ -41,12 +43,19 @@ locals {
     "roles/billing.user",
     "roles/compute.xpnAdmin",
     "roles/compute.networkAdmin",
+
+    // Grant the bootstrap account access to manage service accounts and keys.
     "roles/iam.serviceAccountAdmin",
-    "roles/iam.serviceAccountKeyAdmin"
+    "roles/iam.serviceAccountKeyAdmin",
   ]
 
   bootstrap_project_roles = [
-    "roles/storage.admin"
+    "roles/storage.admin",
+
+    // Grant the bootstrap account access to manage APIs on the bootstrap project. The bootstrap
+    // project must have a given API activated on it so that service accounts can manage that
+    // service on a normal project.
+    "roles/serviceusage.serviceUsageAdmin"
   ]
 
   sa_credentials_dir    = "~/.config/gcloud/service-accounts"
@@ -76,7 +85,7 @@ resource "google_project" "main" {
 
 resource "google_project_services" "main" {
   project  = "${google_project.main.project_id}"
-  services = "${local.default_services}"
+  services = "${local.services}"
 }
 
 resource "random_id" "tf_state_suffix" {
