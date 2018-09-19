@@ -12,7 +12,6 @@ locals {
     "compute.googleapis.com",
     "iam.googleapis.com",
     "oslogin.googleapis.com",
-    "servicemanagement.googleapis.com",
     "serviceusage.googleapis.com",
     "storage-api.googleapis.com"
   ]
